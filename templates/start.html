@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">        
+    <link href="https://fonts.googleapis.com/css?family=Poiret+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<style>
+    html {
+        margin: 0px;
+        height: 100%;
+        width: 100%;
+    }
+
+    body {
+        margin: 0px;
+        min-height: 100%;
+        width: 100%;
+    }
+    body {
+        background-image: url('road2.png');
+        background-position: center;
+        background-repeat: repeat-y;
+        background-size: cover;
+    }
+    input[type="file"] {
+        margin-top: 35px;
+    }
+    .blur {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+        width: 50%;
+    }
+    div.gallery {
+        margin: 5px;
+        border: 1px solid #ccc;
+        float: center;
+        width: 360px;
+    }
+
+    div.gallery:hover {
+        border: 1px solid #777;
+    }
+
+    div.gallery img {
+        width: 100%;
+        height: auto;
+    }
+
+    div.desc {
+        padding: 15px;
+        text-align: center;
+    }
+    </style>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light bg-transparent">
+        <a class="navbar-brand" href="javascript:window.location.reload(true)"><h5>ROAD SEGMENTATION</h5></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="javascript:window.location.reload(true)">Home<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About</a>
+            </li>
+        </div>
+      </nav>
+
+    <div class="container" style="margin-top: 20px;">
+        <div class="row">
+            <div class="col-5 text-right">
+                <h4>Select an image:</h4>
+            </div>
+            <div class="col text-left">
+                <input type="file" id="target"/>
+            </div>
+            <div class="col text-center">
+                <img class="blur" id="thumbnail" style="visibility: hidden;height: 100px;width: 100px;" title="thumbnail"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <div id="loading" style="visibility:hidden;">Loading...</div>
+            </div>
+        </div>
+        <div class="row text-justify" id="result" style="visibility:hidden;">
+            <!-- <div id="result" style="visibility:hidden;"> -->
+                <!-- <img id="map" title="Map"/>
+                &nbsp; &nbsp; &nbsp;
+                <img id="overlay" title="Overlay"/> -->
+                <div class="col gallery blur">
+                    <img id="map" title="Map">
+                    <div class="desc">Binary Map of the satellite image</div>
+                </div>
+                  
+                <div class="col gallery blur">
+                    <img id="overlay" title="overlay">
+                    <div class="desc">Classified Roads in the satellite image</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+<script>
+  const handleImageUpload = event => {
+  const files = event.target.files
+  console.log(files);
+  const formData = new FormData()
+  formData.append('image', files[0])
+  document.getElementById("loading").style.visibility = "visible";
+  document.getElementById("result").style.visibility = "hidden";
+  document.getElementById("thumbnail").style.visibility = "visible";
+  document.getElementById("thumbnail").setAttribute("src", `../data/training/images/${event.target.files[0].name}?t=`+ new Date().getTime());
+
+  fetch('http://localhost:5000', {
+    method: 'POST',
+    body: formData
+  })
+  .then(data => {
+    console.log(data)
+    document.getElementById("loading").style.visibility = "hidden";
+
+    document.getElementById("overlay").setAttribute("src", `../output/test_img0.png?t=`+ new Date().getTime());
+    document.getElementById("map").setAttribute("src", "../output/test_overlay0.png?t="+ new Date().getTime());
+
+    document.getElementById("result").style.visibility = "visible";
+  })
+}
+
+document.getElementById('target').addEventListener('change', event => {
+  handleImageUpload(event)
+})
+
+</script>
+</html>
